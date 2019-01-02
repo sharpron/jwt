@@ -22,6 +22,13 @@ public class Role {
             inverseJoinColumns={@JoinColumn(name="role_id")})
     private Set<Permission> permissions;
 
+    public Role() {
+    }
+
+    public Role(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

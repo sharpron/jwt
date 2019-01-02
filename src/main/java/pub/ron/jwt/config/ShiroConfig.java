@@ -8,26 +8,35 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import pub.ron.jwt.repository.UserRepository;
 import pub.ron.jwt.security.JwtFilter;
 import pub.ron.jwt.security.JwtRealm;
+import pub.ron.jwt.security.LoginRealm;
 
 import javax.servlet.Filter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
 
-    private static final String JWT_FILTER = "jwt";
+    private static final String JWT_FILTER = "jwt-filter";
+    private final UserRepository userRepository;
 
+    @Autowired
+    public ShiroConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Bean
     public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(new JwtRealm());
+        securityManager.setRealms(Arrays.asList(new JwtRealm(), new LoginRealm(userRepository)));
         DefaultSubjectDAO subjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
         // 关闭自带session
         DefaultSessionStorageEvaluator evaluator = (DefaultSessionStorageEvaluator) subjectDAO.getSessionStorageEvaluator();

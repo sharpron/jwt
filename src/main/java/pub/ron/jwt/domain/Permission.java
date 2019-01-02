@@ -18,6 +18,13 @@ public class Permission {
 
     private String name;
 
+    public Permission() {
+    }
+
+    public Permission(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

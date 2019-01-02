@@ -30,7 +30,7 @@ public class JwtTokenizer {
         }
     }
 
-    private static String createToken(JwtPayload payload) {
+    public static String createToken(JwtPayload payload) {
         return Jwts.builder()
                 .setId(payload.getId())
                 .setIssuer("me")

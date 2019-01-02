@@ -9,3 +9,9 @@ spring:
     max-active: 50
     max-idle: 20
     min-idle: 15
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
