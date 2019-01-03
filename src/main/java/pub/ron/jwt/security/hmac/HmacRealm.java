@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Component
+
 public class HmacRealm extends AuthorizingRealm {
 
     private final UserRepository userRepository;
@@ -28,7 +28,7 @@ public class HmacRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String username = principals.getPrimaryPrincipal().toString();
-        User user = userRepository.findUserByUsername(username);
+        User user = null;
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
         Set<String> roles = user.getRoles()
@@ -56,7 +56,7 @@ public class HmacRealm extends AuthorizingRealm {
         if (hmacToken.expired()) {
             throw new AuthenticationException("数字摘要失效");
         }
-        User user = userRepository.findUserByUsername(hmacToken.getPrincipal());
+        User user = null;
         if (user == null) {
             throw new UnknownAccountException( hmacToken.getPrincipal() + "账户不存在");
         }

@@ -1,6 +1,11 @@
 package pub.ron.jwt.security;
 
+import pub.ron.jwt.domain.Permission;
+import pub.ron.jwt.domain.Role;
+import pub.ron.jwt.domain.User;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JwtPayload {
 
@@ -13,6 +18,13 @@ public class JwtPayload {
     private final List<String> roles;
 
     private final List<String> perms;
+
+    public JwtPayload(User user, String host) {
+        this(String.valueOf(user.getId()), System.currentTimeMillis(),
+                host,
+                user.getRoles().stream().map(Role::getName).collect(Collectors.toList()),
+                user.getRoles().stream().flatMap(e -> e.getPermissions().stream()).map(Permission::getName).collect(Collectors.toList()));
+    }
 
     public JwtPayload(String id, long time, String host,
                       List<String> roles, List<String> perms) {

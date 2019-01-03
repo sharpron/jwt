@@ -1,5 +1,6 @@
 package pub.ron.jwt.config;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -8,7 +9,6 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -26,27 +26,22 @@ import java.util.Map;
 public class ShiroConfig {
 
     private static final String JWT_FILTER = "jwt-filter";
-    private final UserRepository userRepository;
-
-    @Autowired
-    public ShiroConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Bean
-    public DefaultWebSecurityManager securityManager() {
+    public DefaultWebSecurityManager securityManager(UserRepository userRepository) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealms(Arrays.asList(new JwtRealm(), new LoginRealm(userRepository)));
         DefaultSubjectDAO subjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
         // 关闭自带session
         DefaultSessionStorageEvaluator evaluator = (DefaultSessionStorageEvaluator) subjectDAO.getSessionStorageEvaluator();
-        evaluator.setSessionStorageEnabled(Boolean.FALSE);
+        evaluator.setSessionStorageEnabled(false);
         subjectDAO.setSessionStorageEvaluator(evaluator);
         return securityManager;
     }
 
     @Bean
-    public ShiroFilterFactoryBean factory(DefaultWebSecurityManager securityManager) {
+    public ShiroFilterFactoryBean factory(SecurityManager securityManager) {
+        SecurityUtils.setSecurityManager(securityManager);
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         Map<String, Filter> filterMap = new HashMap<>();
         filterMap.put(JWT_FILTER, new JwtFilter());
@@ -54,9 +49,7 @@ public class ShiroConfig {
         factoryBean.setSecurityManager(securityManager);
         Map<String, String> filterRuleMap = new HashMap<>();
         //登陆相关api不需要被过滤器拦截
-        filterRuleMap.put("/api/wx/user/login/**", "anon");
-        filterRuleMap.put("/api/response/**", "anon");
-        // 所有请求通过JWT Filter
+        filterRuleMap.put("/user/authc", "anon");
         filterRuleMap.put("/**", JWT_FILTER);
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;

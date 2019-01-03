@@ -14,6 +14,7 @@ public class LoginRealm extends AuthenticatingRealm {
 
     public LoginRealm(UserRepository userRepository) {
         this.userRepository = userRepository;
+        setCredentialsMatcher(PasswordUtil.getCredentialsMatcher());
     }
 
     @Override
@@ -26,7 +27,6 @@ public class LoginRealm extends AuthenticatingRealm {
         if(!userOptional.isPresent()){
             throw new UnknownAccountException("用户不存在");
         }
-        //5.若用户被锁定，可以抛出LockedAccountException
         if(userOptional.get().isDisabled()){
             throw new DisabledAccountException("用户被禁用");
         }

@@ -11,8 +11,7 @@ import java.util.List;
 
 public class JwtTokenizer {
 
-    public static final String SECRET = "42340ag0as8gfs8ay2hi24j091fd9f113";
-    private static final String SEPARATOR = ",";
+    private static final String SECRET = "42340ag0as8gfs8ay2hi24j091fd9f113";
 
     private static final int ACTIVE_INTERVAL = 60 * 60 * 1000;
 
@@ -42,7 +41,7 @@ public class JwtTokenizer {
                 .claim("roles", payload.getRoles())
                 .claim("perms", payload.getPerms())
                 .compressWith(CompressionCodecs.GZIP)
-                .signWith(Keys.hmacShaKeyFor("fds1h24m1341n422".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
                 .compact();
     }
 
