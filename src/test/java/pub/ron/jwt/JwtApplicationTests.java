@@ -1,8 +1,11 @@
 package pub.ron.jwt;
 
+import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pub.ron.jwt.domain.Permission;
 import pub.ron.jwt.domain.Role;
@@ -80,6 +86,32 @@ public class JwtApplicationTests {
                 .param("password", "124")
         ).andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
     }
+
+    @Test
+    public void testGetSelf() throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .build();
+
+        String jwtToken = mockMvc.perform(
+                post("/user/authc")
+                .param("username", "ron")
+                .param("password", "123"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(IsNull.notNullValue()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        mockMvc.perform(get("/user/me").header("Authorization", jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.roles", IsNull.notNullValue()))
+                .andExpect(jsonPath("$.perms", IsNull.notNullValue()))
+                .andExpect(jsonPath("$.host", IsNull.notNullValue()))
+                .andExpect(jsonPath("$.id", IsNull.notNullValue()));
+
+    }
+
 
 }
 

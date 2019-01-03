@@ -3,15 +3,19 @@ package pub.ron.jwt.security;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pub.ron.jwt.domain.User;
 import pub.ron.jwt.repository.UserRepository;
 
 import java.util.Optional;
 
+@Component
 public class LoginRealm extends AuthenticatingRealm {
 
     private final UserRepository userRepository;
 
+    @Autowired
     public LoginRealm(UserRepository userRepository) {
         this.userRepository = userRepository;
         setCredentialsMatcher(PasswordUtil.getCredentialsMatcher());

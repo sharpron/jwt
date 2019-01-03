@@ -6,6 +6,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * 角色实体
+ * @author ron
+ * 2019.01.03
+ */
 @Entity
 @Table
 public class Role {

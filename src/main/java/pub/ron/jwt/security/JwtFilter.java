@@ -1,5 +1,12 @@
 package pub.ron.jwt.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
@@ -10,11 +17,20 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * jwt处理过滤器
+ * @author ron
+ * 2019.01.03
+ */
 public class JwtFilter extends AccessControlFilter {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String JWT_AUTH = "Bearer";
-
+    /**
+     * 添加跨域访问支持
+     * @param request 请求
+     * @param response 响应
+     * @return 继续处理的标记，详见{@link AccessControlFilter#preHandle(ServletRequest, ServletResponse)}
+     * @throws Exception 详见父类
+     */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -32,19 +48,35 @@ public class JwtFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response,
                                       Object mappedValue) throws Exception {
-        return getSubject(request, response).isAuthenticated();
+        boolean authenticated = getSubject(request, response).isAuthenticated();
+        return authenticated;
     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        String authHeader = getAuthHeader(request);
-        if (authHeader != null && authHeader.startsWith(JWT_AUTH)) {
-            getSubject(request, response).login(new JwtToken(authHeader));
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        if (JwtTokenizer.useJwtAuth(httpServletRequest)) {
+            JwtPayload payload;
+            try {
+                payload = JwtTokenizer.parse(JwtTokenizer.getAuth(httpServletRequest));
+            }
+            catch (ExpiredJwtException e) {
+                payload = JwtTokenizer.parseClaims(e.getClaims());
+                if (JwtTokenizer.couldRefresh(payload)) {
+                    payload = payload.newer();
+                    String token = JwtTokenizer.createToken(payload);
+                    JwtTokenizer.addAuthToResponseHeader(WebUtils.toHttp(response), token);
+                }
+                else {
+                    throw new AuthenticationException("jwt is expired", e);
+                }
+            }
+            catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
+                throw new AuthenticationException("jwt is illegal", e);
+            }
+            getSubject(request, response).login(new JwtToken(payload));
+            return true;
         }
         return false;
-    }
-
-    private String getAuthHeader(ServletRequest request) {
-        return WebUtils.toHttp(request).getHeader(AUTHORIZATION_HEADER);
     }
 }

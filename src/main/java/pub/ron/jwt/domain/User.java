@@ -4,6 +4,11 @@ package pub.ron.jwt.domain;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * 用户实体
+ * @author ron
+ * 2019.01.03
+ */
 @Entity
 @Table
 public class User {

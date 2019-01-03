@@ -8,6 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * 权限实体
+ * @author ron
+ * 2019.01.03
+ */
 @Entity
 @Table
 public class Permission {

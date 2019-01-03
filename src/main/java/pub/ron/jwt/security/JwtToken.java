@@ -4,33 +4,19 @@ import org.apache.shiro.authc.AuthenticationToken;
 
 public class JwtToken implements AuthenticationToken {
 
-    private final String token;
+    private final JwtPayload jwtPayload;
 
-    private boolean isAuthenticated;
-
-    JwtToken(String token) {
-        this.token = token;
-    }
-
-    public void parse() {
-
-    }
-
-    public boolean isAuthenticated() {
-        return isAuthenticated;
-    }
-
-    public void setAuthenticated(boolean authenticated) {
-        isAuthenticated = authenticated;
+    JwtToken(JwtPayload jwtPayload) {
+        this.jwtPayload = jwtPayload;
     }
 
     @Override
     public Object getPrincipal() {
-        return token;
+        return jwtPayload;
     }
 
     @Override
     public Object getCredentials() {
-        return token;
+        return jwtPayload;
     }
 }

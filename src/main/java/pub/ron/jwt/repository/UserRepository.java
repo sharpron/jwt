@@ -7,6 +7,11 @@ import pub.ron.jwt.domain.User;
 
 import java.util.Optional;
 
+/**
+ * 用户仓库
+ * @author ron
+ * 2019.01.03
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 

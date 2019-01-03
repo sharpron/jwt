@@ -1,5 +1,6 @@
 package pub.ron.jwt.security;
 
+import org.apache.shiro.SecurityUtils;
 import pub.ron.jwt.domain.Permission;
 import pub.ron.jwt.domain.Role;
 import pub.ron.jwt.domain.User;
@@ -53,5 +54,25 @@ public class JwtPayload {
 
     public List<String> getPerms() {
         return perms;
+    }
+
+    public static JwtPayload getAuthenticated() {
+        return (JwtPayload) SecurityUtils.getSubject().getPrincipal();
+    }
+
+    public JwtPayload newer() {
+        return new JwtPayload(this.getId(), System.currentTimeMillis(), getHost(),
+                getRoles(), getPerms());
+    }
+
+    @Override
+    public String toString() {
+        return "JwtPayload{" +
+                "id='" + id + '\'' +
+                ", time=" + time +
+                ", host='" + host + '\'' +
+                ", roles=" + roles +
+                ", perms=" + perms +
+                '}';
     }
 }
