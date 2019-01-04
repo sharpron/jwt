@@ -15,6 +15,11 @@ public class LoginRealm extends AuthenticatingRealm {
 
     private final UserRepository userRepository;
 
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof UsernamePasswordToken;
+    }
+
     @Autowired
     public LoginRealm(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -24,6 +29,7 @@ public class LoginRealm extends AuthenticatingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
             throws AuthenticationException {
+
         UsernamePasswordToken userToken = (UsernamePasswordToken) token;
         String username = userToken.getUsername();
 

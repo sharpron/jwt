@@ -1,10 +1,10 @@
 package pub.ron.jwt.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -22,7 +22,8 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        return token instanceof JwtToken;
+        boolean supp = token instanceof JwtToken;
+        return supp;
     }
 
     @Override
@@ -36,8 +37,18 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken)
-            throws AuthenticationException, ExpiredJwtException {
-        JwtPayload payload = (JwtPayload) authenticationToken.getPrincipal();
-        return new SimpleAuthenticationInfo(payload, payload, getName());
+            throws AuthenticationException {
+        String token = authenticationToken.getPrincipal().toString();
+        try {
+            JwtPayload payload = JwtTokenizer.parse(token);
+            return new SimpleAuthenticationInfo(payload, payload, getName());
+        }
+        catch (ExpiredJwtException e) {
+            throw new LockedAccountException("fdsafdsafdsa");
+//            return null;
+        }
+        catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
+            throw new AuthenticationException("jwt is illegal", e);
+        }
     }
 }

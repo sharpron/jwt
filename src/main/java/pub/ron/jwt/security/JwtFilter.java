@@ -1,12 +1,7 @@
 package pub.ron.jwt.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
@@ -48,35 +43,22 @@ public class JwtFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response,
                                       Object mappedValue) throws Exception {
-        boolean authenticated = getSubject(request, response).isAuthenticated();
-        return authenticated;
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        if (JwtTokenizer.useJwtAuth(httpServletRequest)) {
+            try {
+                getSubject(request, response).login(new JwtToken(JwtTokenizer.getAuth(httpServletRequest)));
+            }
+            catch (LockedAccountException e) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
-        if (JwtTokenizer.useJwtAuth(httpServletRequest)) {
-            JwtPayload payload;
-            try {
-                payload = JwtTokenizer.parse(JwtTokenizer.getAuth(httpServletRequest));
-            }
-            catch (ExpiredJwtException e) {
-                payload = JwtTokenizer.parseClaims(e.getClaims());
-                if (JwtTokenizer.couldRefresh(payload)) {
-                    payload = payload.newer();
-                    String token = JwtTokenizer.createToken(payload);
-                    JwtTokenizer.addAuthToResponseHeader(WebUtils.toHttp(response), token);
-                }
-                else {
-                    throw new AuthenticationException("jwt is expired", e);
-                }
-            }
-            catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
-                throw new AuthenticationException("jwt is illegal", e);
-            }
-            getSubject(request, response).login(new JwtToken(payload));
-            return true;
-        }
+        WebUtils.toHttp(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
         return false;
     }
 }
