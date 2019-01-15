@@ -33,6 +33,7 @@ import java.util.Map;
 public class ShiroConfig {
 
     private static final String JWT_FILTER = "jwt";
+    private static final String ANON = "anon";
 
 
     /**
@@ -70,7 +71,14 @@ public class ShiroConfig {
         //登陆相关api不需要被过滤器拦截
 
         filterRuleMap.put("/**", JWT_FILTER);
-        filterRuleMap.put("/user/authc", "anon");
+        filterRuleMap.put("/authentication/*", ANON);
+        filterRuleMap.put("/user/sign", ANON);
+        filterRuleMap.put("/swagger-ui.html", ANON);
+        filterRuleMap.put("/swagger-resources", ANON);
+        filterRuleMap.put("/v2/api-docs", ANON);
+        filterRuleMap.put("/webjars/**", ANON);
+        filterRuleMap.put("/swagger-resources/**", ANON);
+        filterRuleMap.put("/csrf", ANON);
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
 
         return factoryBean;

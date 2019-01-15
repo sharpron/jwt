@@ -14,24 +14,20 @@ public class JwtPayload {
 
     private final long time;
 
-    private final String host;
-
     private final List<String> roles;
 
     private final List<String> perms;
 
-    public JwtPayload(User user, String host) {
-        this(String.valueOf(user.getId()), System.currentTimeMillis(),
-                host,
+    JwtPayload(User user) {
+        this(String.valueOf(user.getUsername()), System.currentTimeMillis(),
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toList()),
                 user.getRoles().stream().flatMap(e -> e.getPermissions().stream()).map(Permission::getName).collect(Collectors.toList()));
     }
 
-    public JwtPayload(String id, long time, String host,
+    public JwtPayload(String id, long time,
                       List<String> roles, List<String> perms) {
         this.id = id;
         this.time = time;
-        this.host = host;
         this.roles = roles;
         this.perms = perms;
     }
@@ -44,9 +40,6 @@ public class JwtPayload {
         return time;
     }
 
-    public String getHost() {
-        return host;
-    }
 
     public List<String> getRoles() {
         return roles;
@@ -61,7 +54,7 @@ public class JwtPayload {
     }
 
     public JwtPayload newer() {
-        return new JwtPayload(this.getId(), System.currentTimeMillis(), getHost(),
+        return new JwtPayload(this.getId(), System.currentTimeMillis(),
                 getRoles(), getPerms());
     }
 
@@ -70,7 +63,6 @@ public class JwtPayload {
         return "JwtPayload{" +
                 "id='" + id + '\'' +
                 ", time=" + time +
-                ", host='" + host + '\'' +
                 ", roles=" + roles +
                 ", perms=" + perms +
                 '}';

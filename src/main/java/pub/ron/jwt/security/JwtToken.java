@@ -1,22 +1,8 @@
 package pub.ron.jwt.security;
 
-import org.apache.shiro.authc.AuthenticationToken;
+class JwtToken extends AuthcToken {
 
-public class JwtToken implements AuthenticationToken {
-
-    private final String jwt;
-
-    JwtToken(String jwt) {
-        this.jwt = jwt;
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return jwt;
-    }
-
-    @Override
-    public Object getCredentials() {
-        return jwt;
+    JwtToken(String val) {
+        super(val);
     }
 }

@@ -4,6 +4,7 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: w123456
+    data:
   tomcat:
     max-wait: 20000
     max-active: 50

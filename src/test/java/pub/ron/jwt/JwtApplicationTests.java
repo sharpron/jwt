@@ -76,12 +76,12 @@ public class JwtApplicationTests {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .build();
 
-        mockMvc.perform(post("/user/authc")
+        mockMvc.perform(post("/user/sign")
                 .param("username", "ron")
                 .param("password", "123")
         ).andExpect(status().isOk());
 
-        mockMvc.perform(post("/user/authc")
+        mockMvc.perform(post("/user/sign")
                 .param("username", "ron")
                 .param("password", "124")
         ).andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));

@@ -42,7 +42,7 @@ public class LoginRealm extends AuthenticatingRealm {
         }
         ByteSource credentialsSalt = ByteSource.Util.bytes(userOptional.get().getSalt());
         return new SimpleAuthenticationInfo(
-                userOptional.get().getUsername(),
+                userOptional.get(),
                 userOptional.get().getPassword(),
                 credentialsSalt, getName());
 

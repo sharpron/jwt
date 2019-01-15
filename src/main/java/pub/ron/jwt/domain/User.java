@@ -2,6 +2,7 @@ package pub.ron.jwt.domain;
 
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,6 +18,7 @@ public class User {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -100,4 +102,16 @@ public class User {
         this.disabled = disabled;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
