@@ -48,7 +48,7 @@ public class JwtApplicationTests {
     @Autowired
     private UserController userController;
 
-//    @Before
+    @Before
     public void initData() {
         Set<Permission> permissions = new HashSet<>();
         for (String permission : new String[] {"add", "delete", "update", "query"}) {

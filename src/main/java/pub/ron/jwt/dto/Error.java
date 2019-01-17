@@ -1,5 +1,10 @@
 package pub.ron.jwt.dto;
 
+/**
+ * 错误
+ * @author ron
+ * 2019.0117
+ */
 public class Error {
 
     private final String message;

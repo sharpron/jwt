@@ -1,5 +1,10 @@
 package pub.ron.jwt.dto;
 
+/**
+ * token
+ * @author ron
+ * 2019.0117
+ */
 public class Token {
 
     private final String jwt;

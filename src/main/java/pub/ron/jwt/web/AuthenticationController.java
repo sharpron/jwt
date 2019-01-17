@@ -6,10 +6,13 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pub.ron.jwt.domain.User;
 import pub.ron.jwt.dto.Token;
 import pub.ron.jwt.security.JwtUtils;
-import pub.ron.jwt.service.RefreshTokenService;
 import pub.ron.jwt.service.UserService;
+import pub.ron.jwt.util.BrowserUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/authentication")
@@ -17,20 +20,20 @@ import pub.ron.jwt.service.UserService;
 public class AuthenticationController {
 
     private final UserService userService;
-    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AuthenticationController(UserService userService,
-                                    RefreshTokenService refreshTokenService) {
+    public AuthenticationController(UserService userService) {
         this.userService = userService;
-        this.refreshTokenService = refreshTokenService;
     }
 
     @ApiOperation("申请JWT")
     @PostMapping("/apply-jwt")
     public ResponseEntity<Token> applyToken(@ApiParam @RequestParam String username,
-                                            @ApiParam @RequestParam String password) {
-        return ResponseEntity.ok(userService.sign(username, password));
+                                            @ApiParam @RequestParam String password,
+                                            HttpServletRequest request) {
+        User user = userService.login(username, password);
+        boolean isMobile = BrowserUtils.isMobile(request);
+        return ResponseEntity.ok(userService.applyToken(user, isMobile));
     }
 
 

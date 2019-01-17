@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.servlet.AdviceFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
@@ -35,13 +34,6 @@ public class JwtFilter extends AdviceFilter {
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    /**
-     * 添加跨域访问支持
-     * @param request 请求
-     * @param response 响应
-     * @return 继续处理的标记，详见{@link AccessControlFilter#preHandle(ServletRequest, ServletResponse)}
-     * @throws Exception 详见父类
-     */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
@@ -52,6 +44,12 @@ public class JwtFilter extends AdviceFilter {
         return false;
     }
 
+    /**
+     * 处理跨域
+     * @param request 请求
+     * @param response 响应
+     * @return 是否继续执行
+     */
     private static boolean handleCrossOrigin(HttpServletRequest request, HttpServletResponse response) {
         response.setHeader("Access-control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
@@ -63,6 +61,13 @@ public class JwtFilter extends AdviceFilter {
         return true;
     }
 
+    /**
+     * 使用jwt进行认证
+     * @param request 请求
+     * @param response 响应
+     * @return 认证通过为true， 否则为false
+     * @throws IOException 可能抛出IO异常
+     */
     private static boolean authenticate(HttpServletRequest request, HttpServletResponse response)
         throws IOException {
         try {

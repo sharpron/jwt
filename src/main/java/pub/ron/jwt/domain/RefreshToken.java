@@ -3,6 +3,11 @@ package pub.ron.jwt.domain;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * 刷新token
+ * @author ron
+ * 2019.01.17
+ */
 @Entity
 @Table
 public class RefreshToken {
@@ -16,6 +21,9 @@ public class RefreshToken {
 
     @Column(nullable = false)
     private String value;
+
+    @Column(nullable = true)
+    private boolean mobile;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -43,6 +51,14 @@ public class RefreshToken {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public boolean isMobile() {
+        return mobile;
+    }
+
+    public void setMobile(boolean mobile) {
+        this.mobile = mobile;
     }
 
     public User getUser() {
