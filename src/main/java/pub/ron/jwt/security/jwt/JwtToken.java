@@ -1,4 +1,6 @@
-package pub.ron.jwt.security;
+package pub.ron.jwt.security.jwt;
+
+import pub.ron.jwt.security.AuthcToken;
 
 /**
  * jwt认证token

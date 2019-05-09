@@ -1,16 +1,12 @@
-package pub.ron.jwt.security;
+package pub.ron.jwt.security.jwt;
 
 import com.google.common.collect.Maps;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.SecurityUtils;
-import pub.ron.jwt.domain.Permission;
-import pub.ron.jwt.domain.Role;
-import pub.ron.jwt.domain.User;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * jwt 负载

@@ -10,7 +10,7 @@ import pub.ron.jwt.config.TokenConfig;
 import pub.ron.jwt.domain.Permission;
 import pub.ron.jwt.domain.Role;
 import pub.ron.jwt.domain.User;
-import pub.ron.jwt.security.JwtPayload;
+import pub.ron.jwt.security.jwt.JwtPayload;
 
 import java.util.Date;
 import java.util.stream.Collectors;

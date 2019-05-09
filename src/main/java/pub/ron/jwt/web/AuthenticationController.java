@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pub.ron.jwt.domain.User;
 import pub.ron.jwt.dto.Token;
-import pub.ron.jwt.security.JwtUtils;
+import pub.ron.jwt.security.jwt.JwtUtils;
 import pub.ron.jwt.service.UserService;
 import pub.ron.jwt.util.BrowserUtils;
 

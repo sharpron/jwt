@@ -11,8 +11,8 @@ import pub.ron.jwt.domain.RefreshToken;
 import pub.ron.jwt.domain.User;
 import pub.ron.jwt.dto.Token;
 import pub.ron.jwt.repository.UserRepository;
-import pub.ron.jwt.security.JwtPayload;
 import pub.ron.jwt.security.PasswordUtil;
+import pub.ron.jwt.security.jwt.JwtPayload;
 
 import javax.transaction.Transactional;
 

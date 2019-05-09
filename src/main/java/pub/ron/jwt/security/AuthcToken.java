@@ -11,7 +11,7 @@ public abstract class AuthcToken implements AuthenticationToken {
 
     private final String val;
 
-    AuthcToken(String val) {
+    protected AuthcToken(String val) {
         this.val = val;
     }
 

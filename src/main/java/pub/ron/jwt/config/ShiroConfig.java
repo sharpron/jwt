@@ -1,9 +1,6 @@
 package pub.ron.jwt.config;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
-import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
-import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
@@ -16,8 +13,8 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import pub.ron.jwt.security.CustomModularRealmAuthenticator;
-import pub.ron.jwt.security.JwtFilter;
+import pub.ron.jwt.security.UniqueRealmAuthenticator;
+import pub.ron.jwt.security.jwt.JwtFilter;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -41,7 +38,7 @@ public class ShiroConfig {
      * @return 安全管理器
      */
     @Bean
-    public DefaultWebSecurityManager securityManager(List<Realm> realms, CustomModularRealmAuthenticator authenticator) {
+    public DefaultWebSecurityManager securityManager(List<Realm> realms, UniqueRealmAuthenticator authenticator) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealms(realms);
         authenticator.setRealms(realms);

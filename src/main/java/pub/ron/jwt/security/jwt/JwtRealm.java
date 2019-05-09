@@ -1,4 +1,4 @@
-package pub.ron.jwt.security;
+package pub.ron.jwt.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -77,7 +77,7 @@ public class JwtRealm extends AuthorizingRealm {
             throw new AuthenticationException("jwt已经过期", e);
         }
         catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
-            throw new AuthenticationException("jwt is illegal", e);
+            throw new AuthenticationException("jwt非法", e);
         }
     }
 }

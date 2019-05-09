@@ -1,4 +1,4 @@
-package pub.ron.jwt.security;
+package pub.ron.jwt.security.jwt;
 
 import javax.servlet.http.HttpServletRequest;
 
