@@ -47,10 +47,10 @@ public class JwtApplicationTests {
     @Before
     public void initData() {
         Set<Permission> permissions = new HashSet<>();
-        for (String permission : new String[] {"add", "delete", "update", "query"}) {
-            permissions.add(new Permission(permission));
-
-        }
+//        for (String permission : new String[] {"add", "delete", "update", "query"}) {
+////            permissions.add(new Permission(permission));
+////
+////        }
         permissionRepository.saveAll(permissions);
         Role role = new Role("admin");
         role.setPermissions(permissions);

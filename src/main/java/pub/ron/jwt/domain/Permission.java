@@ -1,12 +1,11 @@
 package pub.ron.jwt.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * 权限实体
@@ -15,28 +14,27 @@ import javax.persistence.Table;
  */
 @Entity
 @Table
-public class Permission {
+public class Permission extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
 
+    @NotNull
+    @Column(nullable = false)
     private String name;
 
-    public Permission() {
-    }
+    @NonNull
+    @Column(nullable = false)
+    private String desc;
 
-    public Permission(String name) {
-        this.name = name;
-    }
+    @ElementCollection
+    private Set<String>  uriPatterns;
 
-    public Long getId() {
-        return id;
-    }
+    @ElementCollection
+    @CollectionTable(name = "request_method",
+            joinColumns = @JoinColumn( name = "permission_id"))
+    @Column(name = "method")
+    @Enumerated(EnumType.STRING)
+    private Set<RequestMethod> methods;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -46,13 +44,29 @@ public class Permission {
         this.name = name;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "name");
+    public String getDesc() {
+        return desc;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that, "name");
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
+
+
+    public Set<String> getUriPatterns() {
+        return uriPatterns;
+    }
+
+    public void setUriPatterns(Set<String> uriPatterns) {
+        this.uriPatterns = uriPatterns;
+    }
+
+    public Set<RequestMethod> getMethods() {
+        return methods;
+    }
+
+    public void setMethods(Set<RequestMethod> methods) {
+        this.methods = methods;
+    }
+
 }

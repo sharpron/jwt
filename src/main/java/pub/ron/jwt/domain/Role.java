@@ -13,13 +13,8 @@ import java.util.Set;
  */
 @Entity
 @Table
-public class Role {
+public class Role extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String name;
 
     @ManyToMany
     @JoinTable(name="role_permission",
@@ -31,24 +26,9 @@ public class Role {
     }
 
     public Role(String name) {
-        this.name = name;
+        setName(name);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Set<Permission> getPermissions() {
         return permissions;
