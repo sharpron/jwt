@@ -68,7 +68,11 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken)
             throws AuthenticationException {
-        String token = authenticationToken.getPrincipal().toString();
+        Object principal = authenticationToken.getPrincipal();
+        if (principal == null) {
+            throw new AuthenticationException("jwt不存在，请在http header中指定Authorization");
+        }
+        String token = principal.toString();
         try {
             JwtPayload payload = jwtService.parse(token);
             return new SimpleAuthenticationInfo(payload, payload, getName());
