@@ -14,7 +14,7 @@ import java.util.Set;
  */
 @Entity
 @Table
-public class Permission extends BaseEntity {
+public class Perm extends BaseEntity {
 
 
     @NotNull
@@ -23,7 +23,7 @@ public class Permission extends BaseEntity {
 
     @NonNull
     @Column(nullable = false)
-    private String desc;
+    private String description;
 
     @ElementCollection
     private Set<String>  uriPatterns;
@@ -44,12 +44,12 @@ public class Permission extends BaseEntity {
         this.name = name;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 

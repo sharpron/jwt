@@ -10,10 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import pub.ron.jwt.domain.Permission;
+import pub.ron.jwt.domain.Perm;
 import pub.ron.jwt.domain.Role;
 import pub.ron.jwt.domain.User;
-import pub.ron.jwt.repository.PermissionRepository;
+import pub.ron.jwt.repository.PermRepository;
 import pub.ron.jwt.repository.RoleRepository;
 import pub.ron.jwt.repository.UserRepository;
 import pub.ron.jwt.service.UserService;
@@ -36,7 +36,7 @@ public class JwtApplicationTests {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private PermissionRepository permissionRepository;
+    private PermRepository permRepository;
 
     @Autowired
     private UserService userService;
@@ -46,19 +46,20 @@ public class JwtApplicationTests {
 
     @Before
     public void initData() {
-        Set<Permission> permissions = new HashSet<>();
+        Set<Perm> perms = new HashSet<>();
 //        for (String permission : new String[] {"add", "delete", "update", "query"}) {
-////            permissions.add(new Permission(permission));
+////            perms.add(new Perm(permission));
 ////
 ////        }
-        permissionRepository.saveAll(permissions);
-        Role role = new Role("admin");
-        role.setPermissions(permissions);
+        permRepository.saveAll(perms);
+        Role role = new Role();
+        role.setName("admin");
+        role.setPerms(perms);
         roleRepository.save(role);
 
         User user = new User();
         user.setRealName("ron");
-        user.setUsername("ron");
+        user.setName("ron");
         user.setPassword("123");
         HashSet<Role> roles = new HashSet<>();
         roles.add(role);

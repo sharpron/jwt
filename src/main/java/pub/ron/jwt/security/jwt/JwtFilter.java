@@ -5,13 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.web.servlet.AdviceFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.util.NestedServletException;
 import pub.ron.jwt.dto.Error;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +30,8 @@ import java.io.IOException;
  * 2019.01.03
  */
 public class JwtFilter extends AdviceFilter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -76,11 +84,39 @@ public class JwtFilter extends AdviceFilter {
             return true;
         }
         catch (AuthenticationException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-            OBJECT_MAPPER.writeValue(response.getOutputStream(), Error.from(e.getMessage()));
+            outputUnAuthorizeMessage(response, e.getMessage());
             return false;
         }
     }
 
+    @Override
+    public void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+        try {
+            super.doFilterInternal(request, response, chain);
+        }
+        catch (NestedServletException e) {
+            if (e.getCause() instanceof UnauthorizedException) {
+                String message = e.getCause().getMessage();
+                LOGGER.warn(message);
+                outputUnAuthorizeMessage(WebUtils.toHttp(response), message);
+            }
+            else {
+                LOGGER.error(e.getMessage(), e);
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * 输出未授权的消息到流
+     * @param response 响应
+     * @param message 消息
+     * @throws IOException io异常
+     */
+    private static void outputUnAuthorizeMessage(HttpServletResponse response, String message)
+            throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+        OBJECT_MAPPER.writeValue(response.getOutputStream(), Error.from(message));
+    }
 }

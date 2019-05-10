@@ -1,4 +1,4 @@
-package pub.ron.jwt.service;
+package pub.ron.jwt.service.impl;
 
 import org.apache.shiro.authc.AuthenticationException;
 

@@ -1,9 +1,6 @@
 package pub.ron.jwt.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -15,9 +12,11 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pub.ron.jwt.service.JwtService;
+import pub.ron.jwt.service.impl.IllegalJwtException;
 
 /**
  * jwt 认证和授权的realm
+ *
  * @author ron
  * 2019.01.17
  */
@@ -37,6 +36,7 @@ public class JwtRealm extends AuthorizingRealm {
 
     /**
      * 只支持Jwt token
+     *
      * @param token jwt
      * @return 能否支持
      */
@@ -47,6 +47,7 @@ public class JwtRealm extends AuthorizingRealm {
 
     /**
      * 获取授权信息
+     *
      * @param principals 认证过的principal
      * @return 授权信息
      */
@@ -61,6 +62,7 @@ public class JwtRealm extends AuthorizingRealm {
 
     /**
      * 获取认证信息
+     *
      * @param authenticationToken 认证token
      * @return 认证信息
      * @throws AuthenticationException 认证异常
@@ -72,16 +74,14 @@ public class JwtRealm extends AuthorizingRealm {
         if (principal == null) {
             throw new AuthenticationException("jwt不存在，请在http header中指定Authorization");
         }
-        String token = principal.toString();
         try {
-            JwtPayload payload = jwtService.parse(token);
+            String token = principal.toString();
+            JwtPayload payload = jwtService.parseJwt(token);
             return new SimpleAuthenticationInfo(payload, payload, getName());
-        }
-        catch (ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             throw new AuthenticationException("jwt已经过期", e);
-        }
-        catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
-            throw new AuthenticationException("jwt非法", e);
+        } catch (IllegalJwtException e) {
+            throw new AuthenticationException(e.getMessage(), e);
         }
     }
 }

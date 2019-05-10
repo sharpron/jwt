@@ -1,7 +1,7 @@
 package pub.ron.jwt.repository;
 
 import org.springframework.stereotype.Repository;
-import pub.ron.jwt.domain.Permission;
+import pub.ron.jwt.domain.Perm;
 
 /**
  * 权限访问
@@ -10,5 +10,5 @@ import pub.ron.jwt.domain.Permission;
  * 2019.01.03
  */
 @Repository
-public interface PermissionRepository extends BaseRepository<Permission> {
+public interface PermRepository extends BaseRepository<Perm> {
 }

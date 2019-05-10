@@ -1,8 +1,5 @@
 package pub.ron.jwt.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -16,35 +13,46 @@ import java.util.Set;
 public class Role extends BaseEntity {
 
 
+
     @ManyToMany
     @JoinTable(name="role_permission",
-            joinColumns={ @JoinColumn(name="permission_id") },
-            inverseJoinColumns={@JoinColumn(name="role_id")})
-    private Set<Permission> permissions;
+            joinColumns={ @JoinColumn(name="role_id") },
+            inverseJoinColumns={@JoinColumn(name="permission_id")})
+    private Set<Perm> perms;
 
-    public Role() {
+    /**
+     * 是否是系统角色
+     */
+    private boolean system;
+
+    /**
+     * 描述
+     */
+    @Column(nullable = false)
+    private String description;
+
+
+    public Set<Perm> getPerms() {
+        return perms;
     }
 
-    public Role(String name) {
-        setName(name);
+    public void setPerms(Set<Perm> perms) {
+        this.perms = perms;
     }
 
-
-    public Set<Permission> getPermissions() {
-        return permissions;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "name", "permissions");
+    public boolean isSystem() {
+        return system;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that, "name", "permissions");
+    public void setSystem(boolean system) {
+        this.system = system;
     }
 }

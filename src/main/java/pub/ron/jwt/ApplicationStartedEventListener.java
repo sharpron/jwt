@@ -1,6 +1,5 @@
 package pub.ron.jwt;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import pub.ron.jwt.annotation.PermissionDesc;
-import pub.ron.jwt.domain.Permission;
-import pub.ron.jwt.service.PermissionService;
+import pub.ron.jwt.annotation.PermDefine;
+import pub.ron.jwt.domain.Perm;
+import pub.ron.jwt.service.PermService;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -33,35 +32,30 @@ public class ApplicationStartedEventListener implements ApplicationListener<Cont
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartedEventListener.class);
 
-    private final PermissionService permissionService;
+    private final PermService permService;
 
     @Autowired
-    public ApplicationStartedEventListener(PermissionService permissionService) {
-        this.permissionService = permissionService;
+    public ApplicationStartedEventListener(PermService permService) {
+        this.permService = permService;
     }
 
 
-    private void savePermission(PermissionDesc desc,
-                                       RequiresPermissions permissions,
-                                       Set<RequestMethod> methods,
-                                       Set<String> patterns) {
-        if (desc != null && permissions != null) {
-            String[] perms = permissions.value();
-            if (perms.length > 1) {
-                throw new RuntimeException("暂时只支持声明一个权限");
-            }
-            String permName = perms[0];
-            Optional<Permission> byName = permissionService.findByName(permName);
-            Permission permission = byName.orElse(new Permission());
-            permission.setName(permName);
-            permission.setDesc(desc.value());
-            permission.setMethods(methods);
-            permission.setUriPatterns(patterns);
+    private void savePermission(PermDefine permDefine,
+                                Set<RequestMethod> methods,
+                                Set<String> patterns) {
+        if (permDefine != null) {
+            String name = permDefine.name();
+            Optional<Perm> byName = permService.findByName(name);
+            Perm perm = byName.orElse(new Perm());
+            perm.setName(name);
+            perm.setDescription(permDefine.desc());
+            perm.setMethods(methods);
+            perm.setUriPatterns(patterns);
             if (byName.isPresent()) {
-                permissionService.update(permission);
+                permService.update(perm);
             }
             else {
-                permissionService.add(permission);
+                permService.add(perm);
             }
 
         }
@@ -76,15 +70,13 @@ public class ApplicationStartedEventListener implements ApplicationListener<Cont
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = bean.getHandlerMethods();
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             HandlerMethod handlerMethod = entry.getValue();
-            PermissionDesc permissionDesc = handlerMethod.getMethodAnnotation(PermissionDesc.class);
-            RequiresPermissions requiresPermissions = handlerMethod.getMethodAnnotation(RequiresPermissions.class);
+            PermDefine permissionDesc = handlerMethod.getMethodAnnotation(PermDefine.class);
             Set<String> patterns = entry.getKey().getPatternsCondition().getPatterns();
             Set<RequestMethod> methods = entry.getKey().getMethodsCondition().getMethods();
             LOGGER.debug(patterns.toString());
             LOGGER.debug(methods.toString());
-            if (permissionDesc != null && requiresPermissions != null) {
-                savePermission(permissionDesc,
-                        requiresPermissions, methods, patterns);
+            if (permissionDesc != null) {
+                savePermission(permissionDesc, methods, patterns);
             }
         }
         for (RequestMappingInfo rmi : handlerMethods.keySet()) {

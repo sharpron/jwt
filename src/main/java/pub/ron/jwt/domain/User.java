@@ -2,7 +2,6 @@ package pub.ron.jwt.domain;
 
 
 import javax.persistence.*;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -12,14 +11,8 @@ import java.util.Set;
  */
 @Entity
 @Table
-public class User {
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Column(unique = true)
-    private String username;
 
     private String password;
 
@@ -34,25 +27,9 @@ public class User {
 
     @ManyToMany
     @JoinTable(name="user_role",
-            joinColumns={ @JoinColumn(name="role_id") },
-            inverseJoinColumns={@JoinColumn(name="user_id")})
+            joinColumns={ @JoinColumn(name="user_id") },
+            inverseJoinColumns={@JoinColumn(name="role_id")})
     private Set<Role> roles;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getPassword() {
         return password;
@@ -102,16 +79,4 @@ public class User {
         this.disabled = disabled;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

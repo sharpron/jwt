@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * 实体的基类
@@ -68,5 +69,27 @@ public abstract class BaseEntity {
 
     public void setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
+    }
+
+    /**
+     * 使用id
+     * @param o 另一个对象
+     * @return 相等返回true
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseEntity that = (BaseEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    /**
+     * 使用id
+     * @return hashcode
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

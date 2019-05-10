@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pub.ron.jwt.annotation.LogDesc;
 import pub.ron.jwt.security.jwt.JwtPayload;
+import pub.ron.jwt.service.JwtService;
 
 @RestController
 @RequestMapping("/user")
@@ -19,7 +20,7 @@ public class UserController {
     @ApiOperation("获取本身的信息")
     @GetMapping("/me")
     public ResponseEntity<JwtPayload> getSelf() {
-        JwtPayload payload = JwtPayload.getAuthenticated();
+        JwtPayload payload = JwtService.getAuthenticated();
         return ResponseEntity.ok(payload);
     }
 

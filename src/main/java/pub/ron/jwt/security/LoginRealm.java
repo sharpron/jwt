@@ -57,7 +57,7 @@ public class LoginRealm extends AuthenticatingRealm {
         UsernamePasswordToken userToken = (UsernamePasswordToken) token;
         String username = userToken.getUsername();
 
-        Optional<User> userOptional = userRepository.findUserByUsername(username);
+        Optional<User> userOptional = userRepository.findByName(username);
         if(!userOptional.isPresent()){
             throw new UnknownAccountException("用户不存在");
         }

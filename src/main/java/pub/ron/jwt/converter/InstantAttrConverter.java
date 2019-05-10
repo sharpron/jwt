@@ -15,7 +15,7 @@ public class InstantAttrConverter implements AttributeConverter<Instant, Timesta
 
     @Override
     public Timestamp convertToDatabaseColumn(Instant instant) {
-        return instant == null ? null : Timestamp.from(instant);
+        return (instant == null ? null : Timestamp.from(instant));
     }
 
     @Override

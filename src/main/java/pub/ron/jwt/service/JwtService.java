@@ -1,82 +1,56 @@
 package pub.ron.jwt.service;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import org.apache.shiro.authc.AuthenticationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import pub.ron.jwt.config.TokenConfig;
-import pub.ron.jwt.domain.Permission;
-import pub.ron.jwt.domain.Role;
+import io.jsonwebtoken.ExpiredJwtException;
+import org.apache.shiro.SecurityUtils;
 import pub.ron.jwt.domain.User;
 import pub.ron.jwt.security.jwt.JwtPayload;
+import pub.ron.jwt.service.impl.IllegalJwtException;
 
-import java.util.Date;
-import java.util.stream.Collectors;
+/**
+ * json web token 服务
+ * @author ron
+ * 2019.05.10
+ */
+public interface JwtService {
 
-@Component
-public class JwtService {
+    /**
+     * 根据用户创建jwt
+     * @param user 用户
+     * @param isMobile 是否是移动端
+     * @return jwt
+     */
+    String createJwt(User user, boolean isMobile);
 
-    private static final String SECRET = "42340ag0as8gfs8ay2hi24j091fd9f113";
+    /**
+     * 根据已有的（旧的）负载生成新的jwt
+     * @param oldPayload 旧的负载
+     * @param isMobile 是否是移动端
+     * @return 新的jwt
+     */
+    String createNewerJwt(JwtPayload oldPayload, boolean isMobile);
 
-    private static final String JWT_AUTH_FLAG = "Bearer ";
+    /**
+     * 解析jwt
+     * @param jwt jwt
+     * @throws IllegalJwtException jwt是非法的将抛出该异常
+     * @throws ExpiredJwtException jwt过期异常
+     * @return 负载
+     */
+    JwtPayload parseJwt(String jwt) throws IllegalJwtException, ExpiredJwtException;
 
-    private final TokenConfig tokenConfig;
+    /**
+     * 解析过期的jwt
+     * @param jwt 过期的jwt
+     * @throws IllegalJwtException jwt是非法的将抛出该异常
+     * @return 负载
+     */
+    JwtPayload parseExpiredJwt(String jwt) throws IllegalJwtException;
 
-    @Autowired
-    private JwtService(TokenConfig tokenConfig) {
-        this.tokenConfig = tokenConfig;
-    }
-
-    String createJwt(User user, boolean isMobile) {
-        JwtPayload payload = new JwtPayload(user.getUsername(), System.currentTimeMillis(),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toList()),
-                user.getRoles().stream().flatMap(e -> e.getPermissions().stream())
-                        .map(Permission::getName).collect(Collectors.toList()));
-        return createToken(payload, isMobile);
-    }
-
-
-    private String createToken(JwtPayload payload, boolean isMobile)
-        throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException {
-        long activeTime = isMobile ? tokenConfig.getAppJwtActiveTime()
-                : tokenConfig.getWebJwtActiveTime();
-        String jwt = Jwts.builder()
-                .setId(payload.getId())
-                .setIssuedAt(new Date(payload.getTime()))
-                .setExpiration(new Date(payload.getTime() + activeTime))
-                .claim("roles", payload.getRoles())
-                .claim("perms", payload.getPerms())
-                .compressWith(CompressionCodecs.GZIP)
-                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
-                .compact();
-        return JWT_AUTH_FLAG + jwt;
-    }
-
-    String createNewerToken(JwtPayload oldPayload, boolean isMobile) {
-        return createToken(oldPayload.newer(), isMobile);
-    }
-
-    public JwtPayload parse(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
-                .parseClaimsJws(token.substring(JWT_AUTH_FLAG.length()))
-                .getBody();
-        return JwtPayload.valueOf(claims);
-    }
-
-    JwtPayload parseExpired(String token) {
-        try {
-            parse(token);
-            throw new IllegalStateException("token is not expired");
-        }
-        catch (ExpiredJwtException e) {
-            return JwtPayload.valueOf(e.getClaims());
-        }
-        catch (UnsupportedJwtException | MalformedJwtException | SignatureException e) {
-            throw new AuthenticationException("jwt is illegal", e);
-        }
+    /**
+     * @return 获取认证成功的
+     */
+    static JwtPayload getAuthenticated() {
+        return (JwtPayload) SecurityUtils.getSubject().getPrincipal();
     }
 
 }

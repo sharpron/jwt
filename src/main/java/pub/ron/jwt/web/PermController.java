@@ -1,6 +1,5 @@
 package pub.ron.jwt.web;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,31 +10,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pub.ron.jwt.annotation.LogDesc;
 import pub.ron.jwt.annotation.PermDefine;
-import pub.ron.jwt.domain.Log;
-import pub.ron.jwt.service.LogService;
+import pub.ron.jwt.domain.Perm;
+import pub.ron.jwt.service.PermService;
 
 /**
- * 日志接口
+ * 权限操作
  * @author ron
  * 2019.05.09
  */
 @RestController
-@RequestMapping("/logs")
-@Api("日志")
-public class LogController {
+@RequestMapping("/perms")
+public class PermController {
 
-    private final LogService logService;
+
+    private final PermService permService;
 
     @Autowired
-    public LogController(LogService logService) {
-        this.logService = logService;
+    public PermController(PermService permService) {
+        this.permService = permService;
     }
 
-    @ApiOperation("查询日志列表")
-    @LogDesc("查询日志列表")
-    @PermDefine(name = "logs:list", desc = "查询日志列表")
+    @ApiOperation("获取权限")
+    @LogDesc("获取权限")
+    @PermDefine(name = "perms:list", desc = "获取权限")
     @GetMapping
-    public ResponseEntity<Page<Log>> getLogs(Pageable pageable) {
-        return ResponseEntity.ok(logService.findByPage(pageable));
+    private ResponseEntity<Page<Perm>> getPerms(Pageable pageable) {
+        return ResponseEntity.ok(permService.findByPage(pageable));
     }
+
 }
