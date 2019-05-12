@@ -5,7 +5,7 @@ package pub.ron.jwt.dto;
  * @author ron
  * 2019.0117
  */
-public class Error {
+public final class Error {
 
     private final String message;
 

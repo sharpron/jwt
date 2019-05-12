@@ -43,21 +43,18 @@ public class ApplicationStartedEventListener implements ApplicationListener<Cont
     private void savePermission(PermDefine permDefine,
                                 Set<RequestMethod> methods,
                                 Set<String> patterns) {
-        if (permDefine != null) {
-            String name = permDefine.name();
-            Optional<Perm> byName = permService.findByName(name);
-            Perm perm = byName.orElse(new Perm());
-            perm.setName(name);
-            perm.setDescription(permDefine.desc());
-            perm.setMethods(methods);
-            perm.setUriPatterns(patterns);
-            if (byName.isPresent()) {
-                permService.update(perm);
-            }
-            else {
-                permService.add(perm);
-            }
-
+        String name = permDefine.name();
+        Optional<Perm> byName = permService.findByName(name);
+        Perm perm = byName.orElse(new Perm());
+        perm.setName(name);
+        perm.setDescription(permDefine.desc());
+        perm.setMethods(methods);
+        perm.setUriPatterns(patterns);
+        if (byName.isPresent()) {
+            permService.update(perm);
+        }
+        else {
+            permService.add(perm);
         }
     }
 

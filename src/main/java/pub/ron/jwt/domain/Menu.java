@@ -26,7 +26,7 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Menu parent;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", fetch = FetchType.EAGER)
     private Set<Button> buttons;
 
     public Perm getPerm() {

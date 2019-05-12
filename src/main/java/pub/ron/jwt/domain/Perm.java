@@ -25,7 +25,7 @@ public class Perm extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String>  uriPatterns;
 
     @ElementCollection

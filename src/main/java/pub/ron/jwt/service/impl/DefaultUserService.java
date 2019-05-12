@@ -7,6 +7,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import pub.ron.jwt.domain.RefreshToken;
 import pub.ron.jwt.domain.User;
 import pub.ron.jwt.dto.Token;
@@ -85,21 +86,17 @@ class DefaultUserService extends BaseServiceAdapter<User, UserRepository> implem
             throw new RuntimeException("username already existed");
         }
         String salt = PasswordUtil.randomSalt();
-        String password = handlePassword(user.getPassword(), salt);
+        String password = PasswordUtil.encrypt(user.getPassword(), salt);
         user.setPassword(password);
         user.setSalt(salt);
         getRepository().save(user);
     }
 
-    /**
-     * 处理密码
-     *
-     * @param password 密码
-     * @param salt     盐
-     * @return 处理后的密码
-     */
-    private String handlePassword(String password, String salt) {
-        return PasswordUtil.encrypt(password, salt);
+    @Override
+    public void modifyPassword(User user) {
+        if (user.getId() != null && StringUtils.hasText(user.getPassword())) {
+
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package pub.ron.jwt.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import pub.ron.jwt.domain.Menu;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author ron
  * 2019.05.09
  */
-public class MenuNode {
+public final class MenuNode {
 
     private static final int TOP_NODE_ID = -1;
 
@@ -28,6 +29,8 @@ public class MenuNode {
 
     private final List<MenuNode> children;
 
+    private final Instant createTime;
+
     public MenuNode(Menu menu) {
         this.id = menu.getId() == null ? TOP_NODE_ID : menu.getId();
         this.parentId = menu.getParent() == null ? TOP_NODE_ID :
@@ -36,9 +39,9 @@ public class MenuNode {
                 menu.getPerm().getUriPatterns().toString();
         this.name = menu.getName();
         this.children = new ArrayList<>();
+        this.createTime = menu.getCreateTime();
     }
 
-    @JsonIgnore
     public int getId() {
         return id;
     }
@@ -58,5 +61,13 @@ public class MenuNode {
 
     public List<MenuNode> getChildren() {
         return children;
+    }
+
+    public Instant getCreateTime() {
+        return createTime;
+    }
+
+    public static boolean isTopNode(Menu menu) {
+        return menu.getId() == TOP_NODE_ID;
     }
 }
